@@ -1,0 +1,32 @@
+server:
+  port: ${serverPort}
+
+forwardedPort: ${hostPort}
+host: localhost:${forwardedPort}
+ping:
+  enabled: ${pingEnabled:true}
+  url: ${pingUrl:/platform/health}
+  interval: ${pingInterval:60000}
+  exitOnFailure: ${pingExitOnFailure:false}
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: api
+          uri: http://localhost:${forwardedPort}
+          predicates:
+            - Path=/**
+        - id: ws
+          uri: ws://localhost:${forwardedPort}
+          predicates:
+            - Path=/**
+
+hystryx:
+  command:
+    default:
+      timeout:
+        enabled: true
+      isolation:
+        thread:
+          timeoutInMilliseconds: 10000
